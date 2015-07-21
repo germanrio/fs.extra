@@ -8,7 +8,13 @@
     , path = require('path')
     ;
 
-  function run(src, dst, cb) {
+  function run(src, dst, opts, cb) {
+
+    if ('function' === typeof opts) {
+      cb = opts;
+      opts = null;
+    }
+    opts = opts || {};
 
     function syncDirs(cb, src, dst) {
       var walker = fsWalk(src)
@@ -20,13 +26,13 @@
 
         fsMkdirp(newDir, stat.mode, next);
       });
-      
+
       walker.on('end', function () {
         cb();
       });
     }
 
-    function syncFiles(cb, src, dst) {
+    function syncFiles(cb, src, dst, opts) {
       var walker = fsWalk(src)
         ;
 
@@ -35,7 +41,7 @@
           , newFile = path.join(dst, root.substr(src.length + 1), stat.name)
           ;
 
-        fsCopy(curFile, newFile, function (err) {
+        fsCopy(curFile, newFile, opts, function (err) {
           if (err) {
             cb(err);
             return;
@@ -43,7 +49,7 @@
           next();
         });
       });
-      
+
       walker.on('end', function () {
         cb();
       });
@@ -55,7 +61,7 @@
       fs.realpath(src, function (err, rsrc) {
         fs.realpath(dst, function (err, rdst) {
           syncDirs(function () {
-            syncFiles(cb, rsrc, rdst);
+            syncFiles(cb, rsrc, rdst, opts);
           }, rsrc, rdst);
         });
       });

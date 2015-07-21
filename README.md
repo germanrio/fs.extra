@@ -49,7 +49,7 @@ fs.copyRecursive
 Basically a local `rsync`, uses `fs.copy` to recursively copy files and folders (with correct permissions).
 
 ```javascript
-fs.copyRecursive('./foo', './bar', function (err) {
+fs.copyRecursive('./foo', './bar', { replace: false }, function (err) {
   if (err) {
     throw err;
   }
@@ -57,6 +57,8 @@ fs.copyRecursive('./foo', './bar', function (err) {
   console.log("Copied './foo' to './bar');
 });
 ```
+
+Options are optional. `replace` defaults to false, but will replace existing files if set to `true`.
 
 fs.mkdirRecursive
 ===
